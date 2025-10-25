@@ -44,7 +44,7 @@
 - [⚠️ Limites e Restrições](#️-limites-e-restrições)
 - [🛠️ Tecnologias](#️-tecnologias)
 - [📜 Licença](#-licença)
-- [👨‍💻 Créditos](#-créditos)
+- [👨‍💻 Créditos](#créditos)
 
 </details>
 
@@ -244,13 +244,14 @@ GET /api/v1/details?id=550&type=movie&field=poster_url
 ```
 
 </details>
+</details>
 
 > [!WARNING]  
 > Para séries de TV, os links de embed requerem substituição manual dos parâmetros `{season}` e `{episode}`.
 
-</details>
-
 ---
+
+
 
 <details open>
 <summary><h3>3. Busca de Mídia</h3></summary>
@@ -303,11 +304,11 @@ GET /api/v1/search?q=matrix&page=1
   ]
 }
 ```
+</details>
 
 > [!NOTE]  
 > A busca filtra automaticamente apenas filmes e séries de TV, excluindo outros tipos de mídia.
 
-</details>
 
 ---
 
@@ -340,11 +341,11 @@ GET /api/v1/random?type=tv
 #### 📥 Comportamento
 
 Este endpoint **redireciona automaticamente** para `/api/v1/details` com um título popular aleatório, retornando todos os detalhes completos.
+</details>
 
 > [!TIP]  
 > Perfeito para implementar features de "Descoberta Aleatória" ou "Sorte de Hoje".
 
-</details>
 
 ---
 
@@ -410,13 +411,12 @@ GET /api/v1/discover?genre=18&sort=popularity.desc
 | 16 | Animação | 10749 | Romance |
 | 35 | Comédia | 878 | Ficção Científica |
 | 80 | Crime | 53 | Thriller |
+</details>
+<br/> 
 
 > [!TIP]  
 > Veja a lista completa de gêneros em: [TMDb Genres](https://api.themoviedb.org/3/genre/movie/list?api_key=YOUR_KEY)
 
-</details>
-
-<br/>
 
 ---
 
@@ -550,7 +550,7 @@ A CYNE API foi construída com:
 
 ---
 
-## 👨‍💻 Créditos
+## Créditos
 
 <div align="center">
 <a href="https://github.com/JempUnkn" aria-label="Repositório JEMP">
