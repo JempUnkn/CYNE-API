@@ -42,6 +42,7 @@
   - [5. Descobrir Títulos](#5-descobrir-títulos)
 - [💡 Exemplos de Uso](#-exemplos-de-uso)
 - [⚠️ Limites e Restrições](#️-limites-e-restrições)
+- [🟢 Status](#status)
 - [🛠️ Tecnologias](#️-tecnologias)
 - [📜 Licença](#-licença)
 - [👨‍💻 Créditos](#créditos)
@@ -72,10 +73,10 @@
 
 ## 🚀 Base URL
 > [!WARNING]
->  O endpoint base fornecido (bore.pub:58483) utiliza um serviço de tunneling e é estritamente temporário e instável. A disponibilidade e o tempo de atividade da API não são garantidos, e o serviço pode ser descontinuado sem aviso prévio.
+>  O endpoint base fornecido (bore.pub:13766) utiliza um serviço de tunneling e é estritamente temporário e instável. A disponibilidade e o tempo de atividade da API não são garantidos, e o serviço pode ser descontinuado sem aviso prévio.
 > Foi Disponibilizada apenas para fins de teste (PoC).
 ```
-http://bore.pub:58483/api/v1
+http://bore.pub:13766/api/v1
 ```
 
 > [!NOTE]  
@@ -430,7 +431,7 @@ GET /api/v1/discover?genre=18&sort=popularity.desc
 // Buscar detalhes de um filme
 async function getMovieDetails(imdbId) {
   const response = await fetch(
-    `http://bore.pub:58483/api/v1/details?id=${imdbId}&type=movie`
+    `http://bore.pub:13766/api/v1/details?id=${imdbId}&type=movie`
   );
   const data = await response.json();
   console.log(data);
@@ -439,7 +440,7 @@ async function getMovieDetails(imdbId) {
 // Buscar títulos
 async function searchMovies(query) {
   const response = await fetch(
-    `http://bore.pub:58483/api/v1/search?q=${encodeURIComponent(query)}`
+    `http://bore.pub:13766/api/v1/search?q=${encodeURIComponent(query)}`
   );
   const data = await response.json();
   return data.results;
@@ -447,7 +448,7 @@ async function searchMovies(query) {
 
 // Título aleatório
 async function getRandomMovie() {
-  const response = await fetch('http://bore.pub:58483/api/v1/random?type=movie');
+  const response = await fetch('http://bore.pub:13766/api/v1/random?type=movie');
   const data = await response.json();
   return data;
 }
@@ -460,14 +461,14 @@ import requests
 
 # Buscar detalhes
 def get_movie_details(tmdb_id):
-    url = f"http://bore.pub:58483/api/v1/details"
+    url = f"http://bore.pub:13766/api/v1/details"
     params = {"id": tmdb_id, "type": "movie"}
     response = requests.get(url, params=params)
     return response.json()
 
 # Buscar títulos
 def search_movies(query):
-    url = f"http://bore.pub:58483/api/v1/search"
+    url = f"http://bore.pub:13766/api/v1/search"
     params = {"q": query, "page": 1}
     response = requests.get(url, params=params)
     return response.json()
@@ -477,13 +478,13 @@ def search_movies(query):
 
 ```bash
 # Detalhes de um filme
-curl "http://bore.pub:58483/api/v1/details?id=tt0133093&type=movie"
+curl "http://bore.pub:13766/api/v1/details?id=tt0133093&type=movie"
 
 # Busca
-curl "http://bore.pub:58483/api/v1/search?q=inception&page=1"
+curl "http://bore.pub:13766/api/v1/search?q=inception&page=1"
 
 # Título aleatório
-curl "http://bore.pub:58483/api/v1/random?type=tv"
+curl "http://bore.pub:13766/api/v1/random?type=tv"
 ```
 
 <br/>
@@ -513,6 +514,15 @@ curl "http://bore.pub:58483/api/v1/random?type=tv"
 | 503 | Serviço temporariamente indisponível | Aguarde alguns segundos e tente novamente |
 
 <br/>
+
+---
+
+## Status
+
+A API está atualmente na **Fase BETA**. O serviço está ativo e funcional para fins de teste e demonstração.
+
+>[!NOTE]
+>Para monitoramento em tempo real da saúde da API, latência e o status das dependências externas (TMDb, OMDb), consulte a nossa [Página de Status (BETA)](http://bore.pub:13766/status).
 
 ---
 
@@ -575,4 +585,5 @@ A CYNE API foi construída com:
 **[⬆ Voltar ao topo](#-cyne---cineagregador-api)**
 
 </div>
+
 
