@@ -23,21 +23,6 @@ Gateway REST para o site **CYNEBLACK**, servindo como proxy/wrapper das APIs TMD
 
 ---
 
-## ⚡ Setup na Vercel
-
-1. Cria um repositório e joga esta pasta `api/` dentro dele.
-2. Coloca o `vercel.json` na raiz do projeto.
-3. No painel da Vercel → **Settings → Environment Variables**:
-
-| Variável   | Descrição                  |
-|------------|----------------------------|
-| `TMDB_KEY` | Chave da API do TMDB       |
-| `OMDB_KEY` | Chave da API do OMDb       |
-
-4. Deploy → todos os endpoints ficam em `/api/v1/...`
-
----
-
 ## 📡 Endpoints
 
 ### `GET /api/v1`
