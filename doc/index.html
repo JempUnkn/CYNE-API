@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url=https://cyne-api.vercel.app/doc/?from=repo">
+    <title>Redirecionando para CYNE-API DOC...</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .loader {
+            border: 4px solid #333;
+            border-top: 4px solid #e50914; /* Cor temática do CYNEBLACK */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        a { color: #e50914; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="loader" style="margin: 0 auto 20px;"></div>
+        <p>Redirecionando para o <strong>CYNE-API DOC</strong>...</p>
+        <p><small>Se não for redirecionado em instantes, <a href="https://cyne-api.vercel.app/doc/?from=repo">clique aqui</a>.</small></p>
+    </div>
+
+    <script>
+        // Redirecionamento via JavaScript como fallback
+        setTimeout(function() {
+            window.location.href = "https://cyne-api.vercel.app/doc/?from=repo";
+        }, 500);
+    </script>
+</body>
+</html>
