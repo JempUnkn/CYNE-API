@@ -7,537 +7,249 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Online-brightgreen?style=for-the-badge" alt="Status">
-  <img src="https://img.shields.io/badge/Versão-1.0.0-blue?style=for-the-badge" alt="Versão">
+  <img src="https://img.shields.io/badge/Versão-1.2.0-blue?style=for-the-badge" alt="Versão">
   <img src="https://img.shields.io/badge/Consumo-Gratuito-orange?style=for-the-badge" alt="Consumo">
   <a href="https://creativecommons.org/licenses/by-nc/4.0/">
     <img src="https://img.shields.io/badge/License-CC%20BY--NC%204.0-blue.svg?style=for-the-badge" alt="License: CC BY-NC 4.0">
   </a>
   <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js">
-  <img src="https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express">
-  <img src="https://img.shields.io/badge/Powered%20by-Claude%20AI-9370DB?style=for-the-badge&logo=anthropic&logoColor=white" alt="Powered by Claude AI">
 </p>
 
 <br/>
 
-# 🎬 CYNE - CineAgregador API
+# CYNE API Gateway — v1
 
-> **Uma API RESTful rápida e leve para agregação de dados de filmes e séries de TV**  
-> Consolidando informações do TMDb, OMDb e outras fontes públicas em um único endpoint.
-
-<br/>
-
-## 📖 Índice
-
-<details>
-<summary><b>📋 Clique para expandir o índice completo</b></summary>
-
-- [🌟 Sobre o Projeto](#-sobre-o-projeto)
-- [🚀 Base URL](#-base-url)
-- [🔑 Fontes de Dados](#-fontes-de-dados)
-- [📡 Endpoints Disponíveis](#-endpoints-disponíveis)
-  - [1. Informações da API](#1-informações-da-api)
-  - [2. Detalhes de Mídia](#2-detalhes-de-mídia)
-  - [3. Busca de Mídia](#3-busca-de-mídia)
-  - [4. Título Aleatório](#4-título-aleatório)
-  - [5. Descobrir Títulos](#5-descobrir-títulos)
-- [💡 Exemplos de Uso](#-exemplos-de-uso)
-- [⚠️ Limites e Restrições](#️-limites-e-restrições)
-- [🟢 Status](#status)
-- [🛠️ Tecnologias](#️-tecnologias)
-- [📜 Licença](#-licença)
-- [👨‍💻 Créditos](#créditos)
-
-</details>
-
-<br/>
+Gateway REST para o site **CYNEBLACK**, servindo como proxy/wrapper das APIs TMDB e OMDb com endpoints extras e geração de URLs de embed.
 
 ---
 
-## 🌟 Sobre o Projeto
+## ⚡ Setup na Vercel
 
-**CYNE - CineAgregador API** é uma solução backend open-source que agrega dados de múltiplas APIs de cinema e televisão, fornecendo informações consolidadas, avaliações, links de players e recomendações em um único endpoint JSON.
+1. Cria um repositório e joga esta pasta `api/` dentro dele.
+2. Coloca o `vercel.json` na raiz do projeto.
+3. No painel da Vercel → **Settings → Environment Variables**:
 
-### ✨ Principais Características
+| Variável   | Descrição                  |
+|------------|----------------------------|
+| `TMDB_KEY` | Chave da API do TMDB       |
+| `OMDB_KEY` | Chave da API do OMDb       |
 
-- ✅ **Agregação Multi-Fonte**: Combina dados do TMDb, OMDb e outras APIs
-- 🎯 **Busca Inteligente**: Sistema de busca com retry e tratamento robusto de erros
-- 🎬 **Players Integrados**: Links diretos para VidSrc, WarezCDN e legendas
-- 🔄 **Sistema de Retry**: Até 4 tentativas automáticas com delay exponencial
-- 📊 **Estatísticas Completas**: IMDb Rating, Metascore, TMDb Score e mais
-- 🎲 **Modo Aleatório**: Descubra títulos populares de forma aleatória
-- 🔍 **Filtros Avançados**: Descoberta por gênero, ano e ordenação
-
-<br/>
+4. Deploy → todos os endpoints ficam em `/api/v1/...`
 
 ---
 
-## 🚀 Base URL
-> [!WARNING]
->  O endpoint base fornecido (bore.pub:34168) utiliza um serviço de tunneling e é estritamente temporário e instável. A disponibilidade e o tempo de atividade da API não são garantidos, e o serviço pode ser descontinuado sem aviso prévio.
-> Foi Disponibilizada apenas para fins de teste (PoC).
-```
-http://bore.pub:34168/api/v1
-```
+## 📡 Endpoints
 
-> [!NOTE]  
-> Todos os endpoints retornam dados no formato **JSON**.  
-> A API não requer autenticação para consumo público.
-
-<br/>
+### `GET /api/v1`
+Status, créditos e lista de endpoints.
 
 ---
 
-## 🔑 Fontes de Dados
+### `GET /api/v1/search`
+| Param      | Tipo   | Default  | Descrição |
+|------------|--------|----------|-----------|
+| `q`        | string | **req.** | Texto de busca |
+| `type`     | string | `multi`  | `multi` \| `movie` \| `tv` \| `person` |
+| `year`     | number | —        | Filtro de ano |
+| `language` | string | `pt-BR`  | Idioma do TMDB |
+| `page`     | number | `1`      | Página |
+| `sort_by`  | string | —        | `popularity.desc` \| `vote_average.desc` \| `release_date.desc` |
+| `adult`    | bool   | `false`  | Inclui conteúdo adulto |
+| `region`   | string | `BR`     | Região |
+| `field`    | string | —        | Retorna apenas um campo de cada resultado |
 
-A CYNE API agrega informações das seguintes fontes:
-
-| Fonte | Descrição | Dados Fornecidos |
-|:------|:----------|:-----------------|
-| **[TMDb](https://www.themoviedb.org/)** | The Movie Database | Informações completas, trailers, elenco, imagens |
-| **[OMDb](https://www.omdbapi.com/)** | Open Movie Database | Ratings IMDb, Metascore, prêmios |
-| **VidSrc** | Player de Streaming | Links de embed para assistir |
-| **WarezCDN** | Player de Streaming | Links alternativos de embed |
-| **OpenSubtitles** | Legendas | Busca de legendas por IMDb ID |
-
-<br/>
+```
+/api/v1/search?q=matrix&type=movie&sort_by=vote_average.desc
+/api/v1/search?q=attack on titan&type=tv&year=2013
+/api/v1/search?q=inception&field=poster_path
+```
 
 ---
 
-## 📡 Endpoints Disponíveis
+### `GET /api/v1/id/[id]`
+Busca por TMDB ID (número) ou IMDB ID (`ttXXXXX`). Detecta automaticamente filme vs série.
 
-<details open>
-<summary><h3>1. Informações da API</h3></summary>
+| Param      | Tipo   | Default  | Descrição |
+|------------|--------|----------|-----------|
+| `type`     | string | `movie`  | `movie` \| `tv` — usado só se ID for TMDB |
+| `language` | string | `pt-BR`  | Idioma |
+| `field`    | string | —        | Retorna **um** campo ex: `?field=title` |
+| `fields`   | string | —        | Retorna múltiplos campos ex: `?fields=title,poster_path,vote_average` |
+| `append`   | string | —        | `append_to_response` do TMDB ex: `?append=credits,videos,keywords` |
+| `omdb`     | bool   | `false`  | Enriquece com ratings do OMDb (IMDb rating, Rotten Tomatoes, etc) |
 
-Retorna informações gerais sobre a API e endpoints disponíveis.
-
-#### 📍 Endpoint
 ```
-GET /
+/api/v1/id/550                        → Fight Club (TMDB)
+/api/v1/id/tt0137523                  → Fight Club (IMDB) — detecta sozinho
+/api/v1/id/1396?type=tv               → Breaking Bad
+/api/v1/id/550?field=title            → { "title": "Fight Club" }
+/api/v1/id/550?fields=title,poster_path,vote_average
+/api/v1/id/550?append=credits,videos
+/api/v1/id/tt0137523?omdb=true        → inclui _omdb com ratings extras
 ```
-
-#### 📥 Resposta de Exemplo
-
-```json
-{
-  "api_name": "CineAgregador API (Open Source Api Free Cinema)",
-  "version": "1.0.0",
-  "description": "API de agregação de dados de filmes e séries...",
-  "endpoints": {
-    "details": "/api/v1/details?id={tmdb_id|imdb_id}&type={movie|tv}",
-    "search": "/api/v1/search?q={query_string}&page={number}",
-    "random": "/api/v1/random?type={movie|tv}",
-    "discover": "/api/v1/discover?genre={id}&year={year}",
-    "poster": "/api/v1/details?id={tmdb_id}&type={movie}&field=poster_url"
-  }
-}
-```
-
-</details>
 
 ---
 
-<details open>
-<summary><h3>2. Detalhes de Mídia</h3></summary>
+### `GET /api/v1/id/[id]/similar`
+| Param      | Tipo   | Default    | Descrição |
+|------------|--------|------------|-----------|
+| `type`     | string | `movie`    | `movie` \| `tv` |
+| `language` | string | `pt-BR`    | Idioma |
+| `page`     | number | `1`        | Página |
+| `mode`     | string | `similar`  | `similar` \| `recommendations` |
+| `field`    | string | —          | Filtra campo |
 
-Obtém informações completas e agregadas de um filme ou série específico.
-
-#### 📍 Endpoint
 ```
-GET /api/v1/details
+/api/v1/id/550/similar?type=movie
+/api/v1/id/1396/similar?type=tv&mode=recommendations
 ```
-
-#### 📋 Parâmetros
-
-| Parâmetro | Obrigatório | Tipo | Descrição |
-|:----------|:------------|:-----|:----------|
-| `id` | ✅ Sim | String/Number | ID do TMDb ou IMDb (formato `tt...`) |
-| `type` | ✅ Sim | String | Tipo de mídia: `movie` ou `tv` |
-| `field` | ❌ Não | String | Campo específico para filtrar (ex: `poster_url`, `cast`) |
-
-#### 🎯 Exemplos de Requisição
-
-```bash
-# Filme usando IMDb ID
-GET /api/v1/details?id=tt0133093&type=movie
-
-# Série usando TMDb ID
-GET /api/v1/details?id=62560&type=tv
-
-# Filtrar apenas o poster
-GET /api/v1/details?id=550&type=movie&field=poster_url
-```
-
-#### 📥 Resposta de Exemplo (Filme)
-
-<details>
-<summary><b>Clique para ver a resposta completa</b></summary>
-
-```json
-{
-  "id": 550,
-  "imdb_id": "tt0137523",
-  "type": "movie",
-  "title": "Clube da Luta",
-  "original_title": "Fight Club",
-  "year": "1999",
-  "release_date": "1999-10-15",
-  "sinopse": "Um funcionário de escritório insone e um fabricante de sabão...",
-  "plot_omdb": "An insomniac office worker and a devil-may-care soap maker...",
-  "tagline": "Mischief. Mayhem. Soap.",
-  "poster_url": "https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
-  "backdrop_url": "https://image.tmdb.org/t/p/original/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
-  "trailer_embed_url": "https://www.youtube.com/embed/SUXWAEX2jlg",
-  "imdb_rating": "8.8",
-  "tmdb_score": "84%",
-  "metascore": "66",
-  "total_votes": 28456,
-  "genres": ["Drama"],
-  "runtime": "139 min",
-  "status": "Released",
-  "language": "en",
-  "director_or_creator": "David Fincher",
-  "cast": [
-    "Brad Pitt",
-    "Edward Norton",
-    "Helena Bonham Carter",
-    "Meat Loaf",
-    "Jared Leto"
-  ],
-  "player_embed": {
-    "vidsrc": "https://vidsrc.xyz/embed/movie/tt0137523",
-    "warezcdn": "https://embed.warezcdn.com/filme/tt0137523",
-    "opensubtitles_search": "https://www.opensubtitles.org/en/search/imdbid-0137523"
-  },
-  "external_links": {
-    "justwatch_search": "https://www.justwatch.com/br/busca?q=Fight%20Club",
-    "google_search": "https://www.google.com/search?q=Fight+Club+onde+assistir+streaming"
-  },
-  "keywords": ["insomnia", "support group", "dual identity"],
-  "tmdb_raw": {
-    "recommendations": [...],
-    "similar": [...]
-  }
-}
-```
-
-</details>
-
-#### 📥 Resposta de Exemplo (Série)
-
-<details>
-<summary><b>Clique para ver a resposta completa</b></summary>
-
-```json
-{
-  "id": 62560,
-  "imdb_id": "tt4955642",
-  "type": "tv",
-  "title": "The Good Place",
-  "original_title": "The Good Place",
-  "year": "2016",
-  "release_date": "2016-09-19",
-  "sinopse": "Eleanor Shellstrop desperta no pós-vida e descobre...",
-  "runtime": "25 min (por ep.)",
-  "director_or_creator": "Michael Schur",
-  "player_embed": {
-    "vidsrc": "https://vidsrc.xyz/embed/tv?imdb=tt4955642&season={season}&episode={episode}",
-    "warezcdn": "https://embed.warezcdn.com/serie/tt4955642/{season}/{episode}"
-  }
-}
-```
-
-</details>
-</details>
-
-> [!WARNING]  
-> Para séries de TV, os links de embed requerem substituição manual dos parâmetros `{season}` e `{episode}`.
 
 ---
 
+### `GET /api/v1/trending`
+| Param      | Tipo   | Default | Descrição |
+|------------|--------|---------|-----------|
+| `media`    | string | `all`   | `all` \| `movie` \| `tv` \| `person` |
+| `window`   | string | `week`  | `day` \| `week` |
+| `language` | string | `pt-BR` | Idioma |
+| `page`     | number | `1`     | Página |
+| `field`    | string | —       | Filtra campo |
 
-
-<details open>
-<summary><h3>3. Busca de Mídia</h3></summary>
-
-Realiza busca multi-mídia (filmes e séries) por título.
-
-#### 📍 Endpoint
 ```
-GET /api/v1/search
+/api/v1/trending
+/api/v1/trending?media=movie&window=day
+/api/v1/trending?field=poster_path
 ```
-
-#### 📋 Parâmetros
-
-| Parâmetro | Obrigatório | Tipo | Descrição |
-|:----------|:------------|:-----|:----------|
-| `q` | ✅ Sim | String | Query de busca (mínimo 2 caracteres) |
-| `page` | ❌ Não | Number | Número da página (padrão: 1) |
-
-#### 🎯 Exemplo de Requisição
-
-```bash
-GET /api/v1/search?q=matrix&page=1
-```
-
-#### 📥 Resposta de Exemplo
-
-```json
-{
-  "query": "matrix",
-  "page": 1,
-  "total_results": 142,
-  "total_pages": 8,
-  "results": [
-    {
-      "id": 603,
-      "type": "movie",
-      "title": "Matrix",
-      "year": 1999,
-      "poster_url": "https://image.tmdb.org/t/p/w342/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
-      "score": "82%"
-    },
-    {
-      "id": 604,
-      "type": "movie",
-      "title": "Matrix Reloaded",
-      "year": 2003,
-      "poster_url": "https://image.tmdb.org/t/p/w342/9TGHDvWrqKBzwDxDodHYXEmOE6J.jpg",
-      "score": "70%"
-    }
-  ]
-}
-```
-</details>
-
-> [!NOTE]  
-> A busca filtra automaticamente apenas filmes e séries de TV, excluindo outros tipos de mídia.
-
 
 ---
 
-<details open>
-<summary><h3>4. Título Aleatório</h3></summary>
+### `GET /api/v1/discover`
+Todos os filtros do endpoint `/discover` do TMDB.
 
-Retorna um título popular aleatório. Útil para a funcionalidade "Me Surpreenda".
+| Param          | Tipo   | Default          | Descrição |
+|----------------|--------|------------------|-----------|
+| `media`        | string | `movie`          | `movie` \| `tv` |
+| `sort_by`      | string | `popularity.desc`| Ex: `vote_average.desc` |
+| `genre`        | string | —                | ID(s) de género ex: `28,12` |
+| `year`         | number | —                | Ano exato |
+| `year_gte`     | number | —                | Ano mínimo |
+| `year_lte`     | number | —                | Ano máximo |
+| `vote_gte`     | number | —                | Nota mínima |
+| `votes_gte`    | number | —                | Mínimo de votos |
+| `runtime_gte`  | number | —                | Duração mínima (min) |
+| `runtime_lte`  | number | —                | Duração máxima (min) |
+| `keyword`      | string | —                | Keyword ID do TMDB |
+| `with_networks`| string | —                | ID de rede (TV) ex: Netflix=213 |
+| `language`     | string | `pt-BR`          | Idioma |
+| `page`         | number | `1`              | Página |
 
-#### 📍 Endpoint
 ```
-GET /api/v1/random
+/api/v1/discover?media=movie&genre=28&year_gte=2020&vote_gte=7
+/api/v1/discover?media=tv&with_networks=213&sort_by=vote_average.desc
+/api/v1/discover?media=movie&runtime_lte=90&sort_by=popularity.desc
 ```
-
-#### 📋 Parâmetros
-
-| Parâmetro | Obrigatório | Tipo | Descrição |
-|:----------|:------------|:-----|:----------|
-| `type` | ❌ Não | String | Tipo: `movie` ou `tv` (padrão: `movie`) |
-
-#### 🎯 Exemplos de Requisição
-
-```bash
-# Filme aleatório
-GET /api/v1/random
-
-# Série aleatória
-GET /api/v1/random?type=tv
-```
-
-#### 📥 Comportamento
-
-Este endpoint **redireciona automaticamente** para `/api/v1/details` com um título popular aleatório, retornando todos os detalhes completos.
-</details>
-
-> [!TIP]  
-> Perfeito para implementar features de "Descoberta Aleatória" ou "Sorte de Hoje".
-
 
 ---
 
-<details open>
-<summary><h3>5. Descobrir Títulos</h3></summary>
-
-Descubra títulos com filtros avançados por gênero, ano e ordenação.
-
-#### 📍 Endpoint
-```
-GET /api/v1/discover
-```
-
-#### 📋 Parâmetros
-
-| Parâmetro | Obrigatório | Tipo | Descrição |
-|:----------|:------------|:-----|:----------|
-| `type` | ❌ Não | String | Tipo: `movie` ou `tv` (padrão: `movie`) |
-| `genre` | ❌ Não | Number | ID do gênero (ex: 28 = Ação) |
-| `year` | ❌ Não | Number | Ano de lançamento |
-| `sort` | ❌ Não | String | Ordenação (padrão: `popularity.desc`) |
-| `page` | ❌ Não | Number | Número da página (padrão: 1) |
-
-#### 🎯 Exemplos de Requisição
-
-```bash
-# Filmes de ação de 2023
-GET /api/v1/discover?genre=28&year=2023&type=movie
-
-# Séries mais bem avaliadas
-GET /api/v1/discover?type=tv&sort=vote_average.desc
-
-# Filmes populares de drama
-GET /api/v1/discover?genre=18&sort=popularity.desc
-```
-
-#### 📥 Resposta de Exemplo
-
-```json
-{
-  "page": 1,
-  "total_results": 9847,
-  "total_pages": 493,
-  "results": [
-    {
-      "id": 872585,
-      "type": "movie",
-      "title": "Oppenheimer",
-      "year": 2023,
-      "poster_url": "https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
-      "score": "82%"
-    }
-  ]
-}
-```
-
-#### 🎨 IDs de Gêneros Comuns
-
-| ID | Gênero | ID | Gênero |
-|:---|:-------|:---|:-------|
-| 28 | Ação | 18 | Drama |
-| 12 | Aventura | 27 | Terror |
-| 16 | Animação | 10749 | Romance |
-| 35 | Comédia | 878 | Ficção Científica |
-| 80 | Crime | 53 | Thriller |
-</details>
-<br/> 
-
-> [!TIP]  
-> Veja a lista completa de gêneros em: [TMDb Genres](https://api.themoviedb.org/3/genre/movie/list?api_key=YOUR_KEY)
-
+### `GET /api/v1/genres`
+| Param      | Tipo   | Default | Descrição |
+|------------|--------|---------|-----------|
+| `media`    | string | `both`  | `movie` \| `tv` \| `both` |
+| `language` | string | `pt-BR` | Idioma |
 
 ---
 
-## 💡 Exemplos de Uso
-
-### JavaScript (Fetch API)
-
-```javascript
-// Buscar detalhes de um filme
-async function getMovieDetails(imdbId) {
-  const response = await fetch(
-    `http://bore.pub:34168/api/v1/details?id=${imdbId}&type=movie`
-  );
-  const data = await response.json();
-  console.log(data);
-}
-
-// Buscar títulos
-async function searchMovies(query) {
-  const response = await fetch(
-    `http://bore.pub:34168/api/v1/search?q=${encodeURIComponent(query)}`
-  );
-  const data = await response.json();
-  return data.results;
-}
-
-// Título aleatório
-async function getRandomMovie() {
-  const response = await fetch('http://bore.pub:34168/api/v1/random?type=movie');
-  const data = await response.json();
-  return data;
-}
-```
-
-### Python (Requests)
-
-```python
-import requests
-
-# Buscar detalhes
-def get_movie_details(tmdb_id):
-    url = f"http://bore.pub:34168/api/v1/details"
-    params = {"id": tmdb_id, "type": "movie"}
-    response = requests.get(url, params=params)
-    return response.json()
-
-# Buscar títulos
-def search_movies(query):
-    url = f"http://bore.pub:34168/api/v1/search"
-    params = {"q": query, "page": 1}
-    response = requests.get(url, params=params)
-    return response.json()
-```
-
-### cURL
-
-```bash
-# Detalhes de um filme
-curl "http://bore.pub:34168/api/v1/details?id=tt0133093&type=movie"
-
-# Busca
-curl "http://bore.pub:34168/api/v1/search?q=inception&page=1"
-
-# Título aleatório
-curl "http://bore.pub:34168/api/v1/random?type=tv"
-```
-
-<br/>
+### `GET /api/v1/nowplaying`
+Filmes em cartaz.  
+Params: `language`, `region`, `page`, `field`
 
 ---
 
-## ⚠️ Limites e Restrições
-
-> [!WARNING]  
-> **Política de Uso Justo**
-
-- 🚫 **Sem Rate Limit Oficial**: Mas recomendamos máximo de 60 requisições/minuto
-- ⏱️ **Timeout**: As requisições têm timeout de 15 segundos
-- 🔄 **Retry Automático**: O sistema tenta até 4 vezes automaticamente
-- 📊 **Uso Comercial**: Consulte a licença CC BY-NC 4.0
-
-> [!NOTE]  
-> A API é fornecida "como está", sem garantias de uptime 100%.  
-> Para uso em produção, considere implementar cache e tratamento de erros robusto.
-
-### 🔴 Códigos de Erro Comuns
-
-| Código | Significado | Ação Recomendada |
-|:-------|:------------|:-----------------|
-| 400 | Parâmetros inválidos | Verifique a documentação |
-| 404 | Título não encontrado | Confirme o ID e tipo |
-| 503 | Serviço temporariamente indisponível | Aguarde alguns segundos e tente novamente |
-
-<br/>
+### `GET /api/v1/toprated`
+Mais bem avaliados.  
+Params: `media` (`movie`\|`tv`), `language`, `region`, `page`, `field`
 
 ---
 
-## Status
+### `GET /api/v1/anime`
+Animes em alta — usa keyword `210024` + genre `16` (lógica extraída do CYNEBLACK).
 
-A API está atualmente na **Fase BETA**. O serviço está ativo e funcional para fins de teste e demonstração.
-
->[!NOTE]
->Para monitoramento em tempo real da saúde da API, latência e o status das dependências externas (TMDb, OMDb), consulte a nossa [Página de Status (BETA)](http://bore.pub:34168/status).
+| Param            | Tipo   | Default          | Descrição |
+|------------------|--------|------------------|-----------|
+| `language`       | string | `pt-BR`          | Idioma |
+| `page`           | number | `1`              | Página |
+| `sort_by`        | string | `popularity.desc`| Ordenação |
+| `include_movies` | bool   | `false`          | Inclui filmes anime |
+| `field`          | string | —                | Filtra campo |
 
 ---
 
-## 🛠️ Tecnologias
+### `GET /api/v1/embed/[tmdb_id]`
+Gera URL de embed para qualquer servidor de streaming.
 
-A CYNE API foi construída com:
+| Param     | Tipo   | Default      | Descrição |
+|-----------|--------|--------------|-----------|
+| `type`    | string | `movie`      | `movie` \| `tv` |
+| `server`  | string | `multiembed` | Ver lista abaixo |
+| `season`  | number | `1`          | Temporada (TV) |
+| `episode` | number | `1`          | Episódio (TV) |
+| `lang`    | string | `pt`         | Código de idioma 2 letras |
+| `imdb`    | string | —            | IMDB ID manual (opcional) |
+| `all`     | bool   | `false`      | Retorna URLs de todos os servidores |
 
-- **[Node.js](https://nodejs.org/)** - Runtime JavaScript
-- **[Express.js](https://expressjs.com/)** - Framework web minimalista
-- **[node-fetch](https://github.com/node-fetch/node-fetch)** - Cliente HTTP
-- **[TMDb API](https://developers.themoviedb.org/)** - Dados de filmes e séries
-- **[OMDb API](https://www.omdbapi.com/)** - Ratings e metadados
-- **Claude AI** - Assistência no desenvolvimento
+```
+/api/v1/embed/550?server=vidsrc&type=movie
+/api/v1/embed/1396?server=warezcdn&type=tv&season=2&episode=1
+/api/v1/embed/37854?server=gstream&type=tv        ← anime (One Piece)
+/api/v1/embed/550?all=true                         ← todos os servidores
+```
 
-<br/>
+---
+
+### `GET /api/v1/servers`
+Lista todos os servidores com metadados: se precisam de IMDB ID, suporte a filmes/TV, etc.
+
+---
+
+## 🎬 Servidores Suportados
+
+| ID           | Label       | IMDB necessário | Anime |
+|--------------|-------------|-----------------|-------|
+| `vidsrc`     | VidSRC      | ✅               | —    |
+| `warezcdn`   | WarezCdn    | ✅               | —    |
+| `gstream`    | GStream     | ⚠️ só filmes    | ✅   |
+| `multiembed` | MultiEmbed  | ❌               | —    |
+| `playerflix` | PlayerFlix  | ❌               | —    |
+| `superflix`  | SuperFlix   | ✅ só filmes    | —    |
+
+---
+
+## 🔑 IDs de Géneros Úteis (TMDB)
+
+| ID | Nome |
+|----|------|
+| 28 | Ação |
+| 12 | Aventura |
+| 16 | Animação / Anime |
+| 35 | Comédia |
+| 80 | Crime |
+| 18 | Drama |
+| 14 | Fantasia |
+| 27 | Terror |
+| 9648 | Mistério |
+| 878 | Ficção Científica |
+| 53 | Suspense |
+
+## 🌐 Redes (TV) Úteis
+
+| ID | Rede |
+|----|------|
+| 213 | Netflix |
+| 1024 | Amazon Prime |
+| 2739 | Disney+ |
+| 2552 | Apple TV+ |
+| 49 | HBO |
+| 4330 | Crunchyroll |
 
 ---
 
@@ -570,8 +282,7 @@ A CYNE API foi construída com:
 </a>
 <br>
 <sub><strong>Created by <a href="https://github.com/JempUnkn">JEMP</a></strong></sub><br>
-<sub>Powered by <strong>Claude AI</strong> (Anthropic)</sub><br>
-<sub>© 2025 <strong>JEMP</strong> — Todos os direitos reservados.</sub>
+<sub>© 2025-26 <strong>JEMP — CYNE-API Gateway v1.2.0</strong> — Todos os direitos reservados.</sub>
 </div>
 
 <br/>
