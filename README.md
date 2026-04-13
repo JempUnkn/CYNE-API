@@ -19,7 +19,7 @@
 
 # CYNE API Gateway — v1
 
-Gateway REST para o site **CYNEBLACK**, servindo como proxy/wrapper das APIs TMDB e OMDb com endpoints extras e geração de URLs de embed.
+Gateway REST, servindo como proxy/wrapper das APIs TMDB e OMDb com endpoints extras e geração de URLs de embed.
 
 ---
 
