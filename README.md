@@ -200,12 +200,13 @@ Lista todos os servidores com metadados: se precisam de IMDB ID, suporte a filme
 
 | ID           | Label       | IMDB necessário | Anime |
 |--------------|-------------|-----------------|-------|
-| `vidsrc`     | VidSRC      | ✅               | —    |
-| `warezcdn`   | WarezCdn    | ✅               | —    |
-| `gstream`    | GStream     | ⚠️ só filmes    | ✅   |
-| `multiembed` | MultiEmbed  | ❌               | —    |
-| `playerflix` | PlayerFlix  | ❌               | —    |
-| `superflix`  | SuperFlix   | ✅ só filmes    | —    |
+| `vidsrc`     | VidSRC      | ✅              | —    |
+| `warezcdn`   | WarezCdn    | ✅              | —    |
+| `gstream`    | GStream     | ❌              | ✅   |
+| `multiembed` | MultiEmbed  | ❌              | —    |
+| `playerflix` | PlayerFlix  | ❌              | —    |
+| `superflix`  | SuperFlix   | ✅              | —    |
+| `-`          | soon        | soon            | _    |
 
 ---
 
